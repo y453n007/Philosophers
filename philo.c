@@ -6,17 +6,33 @@
 /*   By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/16 04:11:03 by yelgharo          #+#    #+#             */
-/*   Updated: 2022/06/04 01:08:22 by yelgharo         ###   ########.fr       */
+/*   Updated: 2022/06/04 22:35:41 by yelgharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	func(int nb, t_data *t)
+int	ft_loop(t_data *t, t_philo *tmp, t_philo *d)
 {
-	t->num = nb;
-	t->dead = 0;
-	t->s = 0;
+	int	n;
+
+	if (ft_time() - tmp->last > t->tt_die)
+	{
+		t->dead = 1;
+		n = ft_time() - t->starting;
+	}
+	if (t->s == t->tt_many || t->dead == 1)
+	{
+		if (t->dead == 1)
+		{
+			pthread_mutex_lock(&d->shared->tap);
+			printf("%d %d is dead\n", n, tmp->id);
+			return (1);
+		}
+		if (t->s == t->tt_many)
+			return (1);
+	}
+	return (0);
 }
 
 int	ft_parse(int nb, char **str, t_data *t)
@@ -38,7 +54,7 @@ int	ft_parse(int nb, char **str, t_data *t)
 	if (nb == 6)
 	{
 		i = (t->tt_repeat = ft_atoi(str[5]));
-		if (i < 0)
+		if (i < 1)
 			return (1);
 	}
 	else
@@ -72,6 +88,7 @@ int	ft_create(t_data *t, t_philo **d)
 
 	i = 1;
 	tmp = NULL;
+	*d = NULL;
 	while (i <= t->tt_many)
 	{
 		tmp = ft_lstnew(i, t);
@@ -87,22 +104,26 @@ int	main(int ac, char **av)
 {
 	t_data	t;
 	t_philo	*d;
+	t_philo	*tmp;
 
-	d = NULL;
 	if (ac > 4 && ac < 7)
 	{
 		if (ft_parse(ac, av, &t))
 			return (1);
-		pthread_mutex_init(&(t.tap), NULL);
 		if (ft_create(&t, &d))
 			return (1);
 		if (ft_start(&d))
 			return (1);
-		while (1)
+		pthread_mutex_init(&(t.tap), NULL);
+		tmp = t.head;
+		while (tmp)
 		{
-			if (t.s == t.tt_many)
+			if (ft_loop(&t, tmp, d))
 				break ;
-			usleep(500);
+			tmp = tmp->next;
+			if (tmp == NULL)
+				tmp = t.head;
+			usleep(100);
 		}
 	}
 	return (0);

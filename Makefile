@@ -6,7 +6,7 @@
 #    By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/17 13:21:55 by yelgharo          #+#    #+#              #
-#    Updated: 2022/05/25 00:13:43 by yelgharo         ###   ########.fr        #
+#    Updated: 2022/06/04 21:32:10 by yelgharo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ CC = gcc
 
 CFLAGS = -Wall -Wextra -Werror
 
-SRC := philo.c tools.c tasks.c
+SRC := philo.c tools_00.c tools_01.c tasks.c
 
 OBJ := $(SRC:.c=.o)
 
