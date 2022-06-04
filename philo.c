@@ -6,25 +6,17 @@
 /*   By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/16 04:11:03 by yelgharo          #+#    #+#             */
-/*   Updated: 2022/05/25 18:28:58 by yelgharo         ###   ########.fr       */
+/*   Updated: 2022/06/04 01:08:22 by yelgharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	routine(void *phil)
+void	func(int nb, t_data *t)
 {
-	t_philo	*philo;
-
-	philo = (t_philo *)phil;
-	if (philo->id % 2 == 0)
-		usleep(500);
-	while (philo->shared->dead == 0)
-	{
-		ft_eating(philo);
-		ft_sleeping(philo);
-		ft_thinking(philo);
-	}
+	t->num = nb;
+	t->dead = 0;
+	t->s = 0;
 }
 
 int	ft_parse(int nb, char **str, t_data *t)
@@ -51,9 +43,8 @@ int	ft_parse(int nb, char **str, t_data *t)
 	}
 	else
 		t->tt_repeat = -1;
-	t->num = nb;
-	t->dead = 0;
-	t->s = 0;
+	func(nb, t);
+	t->starting = ft_time();
 	return (0);
 }
 
@@ -68,11 +59,12 @@ int	ft_start(t_philo **d)
 		nb = pthread_create(&tmp->thread_id, NULL, (void *)routine, tmp);
 		if (nb != 0)
 			return (1);
+		tmp->last = ft_time();
 		tmp = tmp->next;
 	}
 	return (0);
 }
- 
+
 int	ft_create(t_data *t, t_philo **d)
 {
 	int		i;
@@ -101,13 +93,15 @@ int	main(int ac, char **av)
 	{
 		if (ft_parse(ac, av, &t))
 			return (1);
+		pthread_mutex_init(&(t.tap), NULL);
 		if (ft_create(&t, &d))
 			return (1);
 		if (ft_start(&d))
 			return (1);
 		while (1)
-		{	if(t.s == t.tt_many)
-				break;
+		{
+			if (t.s == t.tt_many)
+				break ;
 			usleep(500);
 		}
 	}

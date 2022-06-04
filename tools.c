@@ -6,11 +6,28 @@
 /*   By: yelgharo <yelgharo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 13:52:08 by yelgharo          #+#    #+#             */
-/*   Updated: 2022/05/25 17:08:19 by yelgharo         ###   ########.fr       */
+/*   Updated: 2022/06/03 23:31:43 by yelgharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+long long	ft_time(void)
+{
+	struct timeval	time;
+
+	gettimeofday(&time, NULL);
+	return ((time.tv_sec * 1000) + (time.tv_usec / 1000));
+}
+
+void	sleep_time(long time)
+{
+	long current_time;
+
+	current_time = ft_time();
+	while ((ft_time() - current_time) < time)
+		usleep(15);
+}
 
 int	ft_atoi(const char *str)
 {
@@ -51,6 +68,7 @@ t_philo	*ft_lstnew(int i, t_data *shared)
 	new->shared = shared;
 	new->id = i;
 	new->m_eaten = 0;
+	new->last = 0;
 	new->next = NULL;
 	return (new);
 }
